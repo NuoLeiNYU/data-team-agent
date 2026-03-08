@@ -1,0 +1,60 @@
+{
+  "work_plan_context": {
+    "project_name": "string",
+    "business_purpose": "string",
+    "target_metrics": [
+      {
+        "name": "string",
+        "definition": "string",
+        "target": "string"
+      }
+    ],
+    "source_systems": [
+      {
+        "source_name": "string",
+        "source_type": "string",
+        "location_or_connection": "string",
+        "data_owner": "string",
+        "refresh_cadence": "string",
+        "notes": "string"
+      }
+    ],
+    "business_process": "string",
+    "expected_fact_grain": "string",
+    "in_scope_dimensions": [
+      "string"
+    ],
+    "constraints_compliance": "string"
+  },
+  "tables": [
+    {
+      "table_name": "string",
+      "row_count_estimate": 0,
+      "primary_key_candidates": [
+        "string"
+      ],
+      "columns": [
+        {
+          "name": "string",
+          "data_type": "string",
+          "description": "string"
+        }
+      ]
+    }
+  ],
+  "data_quality_observations": [
+    {
+      "table_name": "string",
+      "column_name": "string",
+      "issue_type": "string",
+      "observation": "string",
+      "severity": "LOW|MEDIUM|HIGH"
+    }
+  ],
+  "assumptions": [
+    "string"
+  ],
+  "open_risks": [
+    "string"
+  ]
+}

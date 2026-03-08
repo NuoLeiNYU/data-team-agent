@@ -1,0 +1,6 @@
+product_id,product_name,category,subcategory,unit_cost,list_price,stock_quantity
+PROD001,Wireless Mouse,Electronics,Peripherals,12.00,29.99,150
+PROD002,Mechanical Keyboard,Electronics,Peripherals,25.00,49.99,85
+PROD003,USB-C Cable,Electronics,Cables,3.50,15.50,500
+PROD004,27in Monitor,Electronics,Displays,120.00,199.99,42
+PROD005,Laptop Stand,Furniture,Office,5.00,12.75,200

@@ -1,0 +1,208 @@
+{
+  "work_plan_context": {
+    "project_name": "Retail Sales Analytics DW - Phase 1",
+    "business_purpose": "Build a dimensional warehouse for sales performance, customer behavior, and product profitability analysis.",
+    "target_metrics": [
+      {
+        "name": "Total Sales Revenue",
+        "definition": "SUM(total_amount) by time period",
+        "target": "Accurate and reconcilable with source transactions"
+      },
+      {
+        "name": "Average Transaction Value",
+        "definition": "SUM(total_amount) / COUNT(transaction_id)",
+        "target": "Available by calendar and region"
+      },
+      {
+        "name": "Customer Lifetime Value by Loyalty Tier",
+        "definition": "SUM(total_amount) by customer and loyalty_tier",
+        "target": "Supported via fact_sales and dim_customer"
+      },
+      {
+        "name": "Product Profitability",
+        "definition": "(unit_price - unit_cost) * quantity by category",
+        "target": "Derived with product cost and sales quantity"
+      }
+    ],
+    "source_systems": [
+      {
+        "source_name": "Local Retail CSV Sources",
+        "source_type": "file",
+        "location_or_connection": "data/sources/*.csv",
+        "data_owner": "Retail Analytics Team",
+        "refresh_cadence": "Batch (as delivered)",
+        "notes": "Phase 1 sample files"
+      }
+    ],
+    "business_process": "Retail sales transactions",
+    "expected_fact_grain": "One row per transaction (transaction_id level)",
+    "in_scope_dimensions": [
+      "dim_customer",
+      "dim_product",
+      "dim_calendar",
+      "dim_store",
+      "dim_payment_method"
+    ],
+    "constraints_compliance": "Naming standards fact_*/dim_*, PII handling for name/email, zero nulls in PK/FK fields, and full source-to-target mapping coverage."
+  },
+  "tables": [
+    {
+      "table_name": "sample_customers",
+      "row_count_estimate": 4,
+      "primary_key_candidates": [
+        "customer_id"
+      ],
+      "columns": [
+        {
+          "name": "customer_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Customer business key"
+        },
+        {
+          "name": "customer_name",
+          "data_type": "VARCHAR(100)",
+          "description": "PII customer full name"
+        },
+        {
+          "name": "email",
+          "data_type": "VARCHAR(100)",
+          "description": "PII customer email"
+        },
+        {
+          "name": "signup_date",
+          "data_type": "DATE",
+          "description": "Customer signup date"
+        },
+        {
+          "name": "country",
+          "data_type": "VARCHAR(50)",
+          "description": "Customer country"
+        },
+        {
+          "name": "loyalty_tier",
+          "data_type": "VARCHAR(20)",
+          "description": "Customer loyalty tier"
+        },
+        {
+          "name": "annual_spend",
+          "data_type": "DECIMAL(10,2)",
+          "description": "Customer annual spend"
+        }
+      ]
+    },
+    {
+      "table_name": "sample_products",
+      "row_count_estimate": 5,
+      "primary_key_candidates": [
+        "product_id"
+      ],
+      "columns": [
+        {
+          "name": "product_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Product business key"
+        },
+        {
+          "name": "product_name",
+          "data_type": "VARCHAR(100)",
+          "description": "Product name"
+        },
+        {
+          "name": "category",
+          "data_type": "VARCHAR(50)",
+          "description": "Product category"
+        },
+        {
+          "name": "subcategory",
+          "data_type": "VARCHAR(50)",
+          "description": "Product subcategory"
+        },
+        {
+          "name": "unit_cost",
+          "data_type": "DECIMAL(10,2)",
+          "description": "Unit cost"
+        },
+        {
+          "name": "list_price",
+          "data_type": "DECIMAL(10,2)",
+          "description": "List price"
+        },
+        {
+          "name": "stock_quantity",
+          "data_type": "INT",
+          "description": "Available stock quantity"
+        }
+      ]
+    },
+    {
+      "table_name": "sample_sales",
+      "row_count_estimate": 7,
+      "primary_key_candidates": [
+        "transaction_id"
+      ],
+      "columns": [
+        {
+          "name": "transaction_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Transaction business key"
+        },
+        {
+          "name": "date",
+          "data_type": "DATE",
+          "description": "Transaction date"
+        },
+        {
+          "name": "store_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Store identifier"
+        },
+        {
+          "name": "customer_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Customer FK"
+        },
+        {
+          "name": "product_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Product FK"
+        },
+        {
+          "name": "quantity",
+          "data_type": "INT",
+          "description": "Units sold"
+        },
+        {
+          "name": "unit_price",
+          "data_type": "DECIMAL(10,2)",
+          "description": "Unit selling price"
+        },
+        {
+          "name": "total_amount",
+          "data_type": "DECIMAL(10,2)",
+          "description": "Transaction total amount"
+        },
+        {
+          "name": "payment_method",
+          "data_type": "VARCHAR(20)",
+          "description": "Payment method"
+        },
+        {
+          "name": "region",
+          "data_type": "VARCHAR(20)",
+          "description": "Store region"
+        }
+      ]
+    }
+  ],
+  "data_quality_observations": [],
+  "assumptions": [
+    "Source sample files are internally consistent and transaction_id is unique.",
+    "Calendar dimension is generated as reference data and not sourced from input files.",
+    "Store attributes beyond store_id and region require future enrichment."
+  ],
+  "open_risks": [
+    "Sample size is small and may not expose production edge cases.",
+    "PII fields require masking/encryption strategy in production.",
+    "Product unit_cost completeness in production sources is not yet verified."
+  ]
+}

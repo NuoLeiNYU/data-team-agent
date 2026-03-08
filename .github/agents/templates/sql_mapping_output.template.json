@@ -1,0 +1,52 @@
+{
+  "summary": "string",
+  "business_alignment": {
+    "business_purpose": "string",
+    "target_metrics_supported": [
+      "string"
+    ],
+    "mapping_completeness_target": "string"
+  },
+  "mappings": [
+    {
+      "mapping_id": "string",
+      "source_table": "string",
+      "source_column": "string",
+      "target_table": "string",
+      "target_column": "string",
+      "mapping_type": "DIRECT|DERIVED|LOOKUP|CONSTANT",
+      "transform_business_logic": "string",
+      "pseudo_sql_logic": "string",
+      "join_context": {
+        "required": true,
+        "join_to": "string",
+        "join_condition": "string"
+      },
+      "notes": "string"
+    }
+  ],
+  "coverage": {
+    "total_target_columns": 0,
+    "mapped_target_columns": 0,
+    "unmapped_target_columns": [
+      {
+        "target_table": "string",
+        "target_column": "string",
+        "reason": "string"
+      }
+    ]
+  },
+  "quality_controls": [
+    {
+      "rule_name": "string",
+      "description": "string",
+      "sql_check": "string"
+    }
+  ],
+  "assumptions": [
+    "string"
+  ],
+  "open_risks": [
+    "string"
+  ]
+}

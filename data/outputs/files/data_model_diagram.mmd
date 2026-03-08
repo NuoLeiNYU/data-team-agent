@@ -1,0 +1,62 @@
+erDiagram
+    FACT_SALES {
+        VARCHAR transaction_id PK
+        INT customer_key FK
+        INT product_key FK
+        INT date_key FK
+        INT store_key FK
+        INT payment_method_key FK
+        INT quantity
+        DECIMAL unit_price
+        DECIMAL unit_cost
+        DECIMAL total_amount
+        DECIMAL total_cost
+        DECIMAL profit_amount
+    }
+
+    DIM_CUSTOMER {
+        INT customer_key PK
+        VARCHAR customer_id
+        VARCHAR customer_name
+        VARCHAR email
+        DATE signup_date
+        VARCHAR country
+        VARCHAR loyalty_tier
+        DECIMAL annual_spend
+    }
+
+    DIM_PRODUCT {
+        INT product_key PK
+        VARCHAR product_id
+        VARCHAR product_name
+        VARCHAR category
+        VARCHAR subcategory
+        DECIMAL unit_cost
+        DECIMAL list_price
+        INT stock_quantity
+    }
+
+    DIM_CALENDAR {
+        INT calendar_key PK
+        DATE full_date
+        INT year_number
+        INT month_number
+        INT day_of_month
+    }
+
+    DIM_STORE {
+        INT store_key PK
+        VARCHAR store_id
+        VARCHAR region
+    }
+
+    DIM_PAYMENT_METHOD {
+        INT payment_method_key PK
+        VARCHAR payment_method
+    }
+
+    DIM_CUSTOMER ||--o{ FACT_SALES : customer_key
+    DIM_PRODUCT ||--o{ FACT_SALES : product_key
+    DIM_CALENDAR ||--o{ FACT_SALES : date_key
+    DIM_STORE ||--o{ FACT_SALES : store_key
+    DIM_PAYMENT_METHOD ||--o{ FACT_SALES : payment_method_key

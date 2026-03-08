@@ -1,0 +1,5 @@
+customer_id,customer_name,email,signup_date,country,loyalty_tier,annual_spend
+CUST001,Alice Johnson,alice@email.com,2024-03-20,USA,Gold,2500.00
+CUST002,Bob Smith,bob@email.com,2024-05-15,USA,Silver,1200.00
+CUST003,Carol White,carol@email.com,2023-11-10,Canada,Platinum,5800.00
+CUST004,Diana Prince,diana@email.com,2025-08-22,USA,Bronze,350.00

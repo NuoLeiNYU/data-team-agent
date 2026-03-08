@@ -1,0 +1,89 @@
+{
+  "summary": "string",
+  "business_alignment": {
+    "business_purpose": "string",
+    "target_metrics_supported": [
+      "string"
+    ],
+    "fact_grain": "string"
+  },
+  "schema": {
+    "fact_tables": [
+      {
+        "name": "fact_table_name",
+        "grain": "string",
+        "columns": [
+          {
+            "name": "column_name",
+            "data_type": "string",
+            "key_type": "PK|FK|REGULAR"
+          }
+        ]
+      }
+    ],
+    "dimension_tables": [
+      {
+        "name": "dim_calendar",
+        "columns": [
+          {
+            "name": "calendar_key",
+            "data_type": "INT",
+            "key_type": "PK"
+          },
+          {
+            "name": "full_date",
+            "data_type": "DATE",
+            "key_type": "REGULAR"
+          },
+          {
+            "name": "year_number",
+            "data_type": "INT",
+            "key_type": "REGULAR"
+          },
+          {
+            "name": "month_number",
+            "data_type": "INT",
+            "key_type": "REGULAR"
+          },
+          {
+            "name": "day_of_month",
+            "data_type": "INT",
+            "key_type": "REGULAR"
+          }
+        ]
+      },
+      {
+        "name": "dim_table_name",
+        "columns": [
+          {
+            "name": "column_name",
+            "data_type": "string",
+            "key_type": "PK|FK|REGULAR"
+          }
+        ]
+      }
+    ]
+  },
+  "table_rationale": [
+    {
+      "table_name": "string",
+      "role": "FACT|DIMENSION",
+      "purpose_or_grain": "string",
+      "source_tables": [
+        "string"
+      ]
+    }
+  ],
+  "conformance_checks": {
+    "naming_standard_passed": true,
+    "dim_calendar_included": true,
+    "facts_have_fk_to_dimensions": true
+  },
+  "ddl": "string",
+  "assumptions": [
+    "string"
+  ],
+  "open_risks": [
+    "string"
+  ]
+}

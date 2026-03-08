@@ -1,0 +1,9 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "C:/main/Test/.venv/Scripts/python.exe": true,
+        "/^git add \\.; git commit -m \"Initial project setup with roadmap and workflow diagram\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

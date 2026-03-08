@@ -1,0 +1,196 @@
+{
+  "summary": "Kimball star schema for retail sales at transaction grain with conformed customer, product, calendar, store, and payment dimensions.",
+  "business_alignment": {
+    "business_purpose": "Enable sales performance, customer value, and product profitability analytics.",
+    "target_metrics_supported": [
+      "Total Sales Revenue",
+      "Average Transaction Value",
+      "Customer Lifetime Value by Loyalty Tier",
+      "Product Profitability"
+    ],
+    "fact_grain": "One row per transaction (transaction_id level)"
+  },
+  "schema": {
+    "fact_tables": [
+      {
+        "name": "fact_sales",
+        "grain": "One row per transaction",
+        "columns": [
+          {
+            "name": "transaction_id",
+            "data_type": "VARCHAR(20)",
+            "key_type": "PK"
+          },
+          {
+            "name": "customer_key",
+            "data_type": "INT",
+            "key_type": "FK"
+          },
+          {
+            "name": "product_key",
+            "data_type": "INT",
+            "key_type": "FK"
+          },
+          {
+            "name": "date_key",
+            "data_type": "INT",
+            "key_type": "FK"
+          },
+          {
+            "name": "store_key",
+            "data_type": "INT",
+            "key_type": "FK"
+          },
+          {
+            "name": "payment_method_key",
+            "data_type": "INT",
+            "key_type": "FK"
+          },
+          {
+            "name": "quantity",
+            "data_type": "INT",
+            "key_type": "REGULAR"
+          },
+          {
+            "name": "unit_price",
+            "data_type": "DECIMAL(10,2)",
+            "key_type": "REGULAR"
+          },
+          {
+            "name": "unit_cost",
+            "data_type": "DECIMAL(10,2)",
+            "key_type": "REGULAR"
+          },
+          {
+            "name": "total_amount",
+            "data_type": "DECIMAL(10,2)",
+            "key_type": "REGULAR"
+          },
+          {
+            "name": "total_cost",
+            "data_type": "DECIMAL(10,2)",
+            "key_type": "REGULAR"
+          },
+          {
+            "name": "profit_amount",
+            "data_type": "DECIMAL(10,2)",
+            "key_type": "REGULAR"
+          }
+        ]
+      }
+    ],
+    "dimension_tables": [
+      {
+        "name": "dim_calendar",
+        "columns": [
+          {
+            "name": "calendar_key",
+            "data_type": "INT",
+            "key_type": "PK"
+          },
+          {
+            "name": "full_date",
+            "data_type": "DATE",
+            "key_type": "REGULAR"
+          },
+          {
+            "name": "year_number",
+            "data_type": "INT",
+            "key_type": "REGULAR"
+          },
+          {
+            "name": "month_number",
+            "data_type": "INT",
+            "key_type": "REGULAR"
+          },
+          {
+            "name": "day_of_month",
+            "data_type": "INT",
+            "key_type": "REGULAR"
+          }
+        ]
+      },
+      {
+        "name": "dim_customer",
+        "columns": [
+          {
+            "name": "customer_key",
+            "data_type": "INT",
+            "key_type": "PK"
+          },
+          {
+            "name": "customer_id",
+            "data_type": "VARCHAR(20)",
+            "key_type": "REGULAR"
+          },
+          {
+            "name": "loyalty_tier",
+            "data_type": "VARCHAR(20)",
+            "key_type": "REGULAR"
+          }
+        ]
+      },
+      {
+        "name": "dim_product",
+        "columns": [
+          {
+            "name": "product_key",
+            "data_type": "INT",
+            "key_type": "PK"
+          },
+          {
+            "name": "product_id",
+            "data_type": "VARCHAR(20)",
+            "key_type": "REGULAR"
+          },
+          {
+            "name": "category",
+            "data_type": "VARCHAR(50)",
+            "key_type": "REGULAR"
+          }
+        ]
+      }
+    ]
+  },
+  "table_rationale": [
+    {
+      "table_name": "fact_sales",
+      "role": "FACT",
+      "purpose_or_grain": "Captures one row per retail transaction for additive sales and profit metrics.",
+      "source_tables": [
+        "sample_sales"
+      ]
+    },
+    {
+      "table_name": "dim_customer",
+      "role": "DIMENSION",
+      "purpose_or_grain": "Customer segmentation and loyalty context.",
+      "source_tables": [
+        "sample_customers"
+      ]
+    },
+    {
+      "table_name": "dim_product",
+      "role": "DIMENSION",
+      "purpose_or_grain": "Product hierarchy and cost context for profitability.",
+      "source_tables": [
+        "sample_products"
+      ]
+    }
+  ],
+  "conformance_checks": {
+    "naming_standard_passed": true,
+    "dim_calendar_included": true,
+    "facts_have_fk_to_dimensions": true
+  },
+  "ddl": "CREATE TABLE dim_customer (customer_key INT PRIMARY KEY, customer_id VARCHAR(20) UNIQUE, customer_name VARCHAR(100), email VARCHAR(100), signup_date DATE, country VARCHAR(50), loyalty_tier VARCHAR(20), annual_spend DECIMAL(10,2));\nCREATE TABLE dim_product (product_key INT PRIMARY KEY, product_id VARCHAR(20) UNIQUE, product_name VARCHAR(100), category VARCHAR(50), subcategory VARCHAR(50), unit_cost DECIMAL(10,2), list_price DECIMAL(10,2), stock_quantity INT);\nCREATE TABLE dim_calendar (calendar_key INT PRIMARY KEY, full_date DATE UNIQUE, year_number INT, month_number INT, day_of_month INT);\nCREATE TABLE dim_store (store_key INT PRIMARY KEY, store_id VARCHAR(20) UNIQUE, region VARCHAR(20));\nCREATE TABLE dim_payment_method (payment_method_key INT PRIMARY KEY, payment_method VARCHAR(20) UNIQUE);\nCREATE TABLE fact_sales (transaction_id VARCHAR(20) PRIMARY KEY, customer_key INT, product_key INT, date_key INT, store_key INT, payment_method_key INT, quantity INT, unit_price DECIMAL(10,2), unit_cost DECIMAL(10,2), total_amount DECIMAL(10,2), total_cost DECIMAL(10,2), profit_amount DECIMAL(10,2));",
+  "assumptions": [
+    "SCD Type 0 for phase 1 dimensions.",
+    "Surrogate keys are generated during dimension load.",
+    "Calendar table is pre-populated for analysis period."
+  ],
+  "open_risks": [
+    "Store dimension remains partially populated without store master data.",
+    "PII masking approach for customer_name/email must be finalized before production."
+  ]
+}

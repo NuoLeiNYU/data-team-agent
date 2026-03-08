@@ -1,0 +1,142 @@
+{
+  "summary": "Column-level source-to-target mapping for retail sales star schema with direct, lookup, and derived transformations.",
+  "business_alignment": {
+    "business_purpose": "Provide auditable lineage from source CSV data to dimensional warehouse targets.",
+    "target_metrics_supported": [
+      "Total Sales Revenue",
+      "Average Transaction Value",
+      "Customer Lifetime Value by Loyalty Tier",
+      "Product Profitability"
+    ],
+    "mapping_completeness_target": "100% of required target columns mapped or explicitly documented"
+  },
+  "mappings": [
+    {
+      "mapping_id": "MAP-001",
+      "source_table": "sample_sales",
+      "source_column": "transaction_id",
+      "target_table": "fact_sales",
+      "target_column": "transaction_id",
+      "mapping_type": "DIRECT",
+      "transform_business_logic": "Carry source transaction identifier as fact primary key.",
+      "pseudo_sql_logic": "SELECT transaction_id",
+      "join_context": {
+        "required": false,
+        "join_to": "",
+        "join_condition": ""
+      },
+      "notes": "Degenerate transaction identifier"
+    },
+    {
+      "mapping_id": "MAP-002",
+      "source_table": "sample_sales",
+      "source_column": "customer_id",
+      "target_table": "fact_sales",
+      "target_column": "customer_key",
+      "mapping_type": "LOOKUP",
+      "transform_business_logic": "Lookup surrogate key in dim_customer by customer_id.",
+      "pseudo_sql_logic": "JOIN dim_customer dc ON src.customer_id = dc.customer_id; SELECT dc.customer_key",
+      "join_context": {
+        "required": true,
+        "join_to": "dim_customer",
+        "join_condition": "src.customer_id = dim_customer.customer_id"
+      },
+      "notes": "Reject or quarantine unmatched business keys"
+    },
+    {
+      "mapping_id": "MAP-003",
+      "source_table": "sample_sales",
+      "source_column": "product_id",
+      "target_table": "fact_sales",
+      "target_column": "product_key",
+      "mapping_type": "LOOKUP",
+      "transform_business_logic": "Lookup surrogate key in dim_product by product_id.",
+      "pseudo_sql_logic": "JOIN dim_product dp ON src.product_id = dp.product_id; SELECT dp.product_key",
+      "join_context": {
+        "required": true,
+        "join_to": "dim_product",
+        "join_condition": "src.product_id = dim_product.product_id"
+      },
+      "notes": "Required for product profitability"
+    },
+    {
+      "mapping_id": "MAP-004",
+      "source_table": "sample_sales",
+      "source_column": "date",
+      "target_table": "fact_sales",
+      "target_column": "date_key",
+      "mapping_type": "DERIVED",
+      "transform_business_logic": "Convert source date to YYYYMMDD integer calendar key.",
+      "pseudo_sql_logic": "CAST(FORMAT(CAST(src.date AS DATE), 'yyyyMMdd') AS INT)",
+      "join_context": {
+        "required": true,
+        "join_to": "dim_calendar",
+        "join_condition": "derived_date_key = dim_calendar.calendar_key"
+      },
+      "notes": "Assumes calendar key format YYYYMMDD"
+    },
+    {
+      "mapping_id": "MAP-005",
+      "source_table": "sample_sales",
+      "source_column": "total_amount",
+      "target_table": "fact_sales",
+      "target_column": "total_amount",
+      "mapping_type": "DIRECT",
+      "transform_business_logic": "Use source total amount and reconcile with quantity * unit_price.",
+      "pseudo_sql_logic": "SELECT CAST(src.total_amount AS DECIMAL(10,2))",
+      "join_context": {
+        "required": false,
+        "join_to": "",
+        "join_condition": ""
+      },
+      "notes": "Data quality check compares against derived value"
+    },
+    {
+      "mapping_id": "MAP-006",
+      "source_table": "sample_sales",
+      "source_column": "quantity",
+      "target_table": "fact_sales",
+      "target_column": "profit_amount",
+      "mapping_type": "DERIVED",
+      "transform_business_logic": "Profit is derived as total_amount - (quantity * unit_cost).",
+      "pseudo_sql_logic": "src.total_amount - (src.quantity * dp.unit_cost)",
+      "join_context": {
+        "required": true,
+        "join_to": "dim_product",
+        "join_condition": "src.product_id = dim_product.product_id"
+      },
+      "notes": "Depends on product cost quality"
+    }
+  ],
+  "coverage": {
+    "total_target_columns": 6,
+    "mapped_target_columns": 6,
+    "unmapped_target_columns": []
+  },
+  "quality_controls": [
+    {
+      "rule_name": "PK uniqueness",
+      "description": "transaction_id must be unique in fact_sales",
+      "sql_check": "SELECT transaction_id, COUNT(*) FROM fact_sales GROUP BY transaction_id HAVING COUNT(*) > 1"
+    },
+    {
+      "rule_name": "Revenue reconciliation",
+      "description": "Source and target total_amount aggregates should reconcile",
+      "sql_check": "SELECT SUM(total_amount) FROM sample_sales; SELECT SUM(total_amount) FROM fact_sales"
+    },
+    {
+      "rule_name": "FK integrity",
+      "description": "All surrogate keys in fact_sales must resolve to dimensions",
+      "sql_check": "SELECT COUNT(*) FROM fact_sales fs LEFT JOIN dim_customer dc ON fs.customer_key = dc.customer_key WHERE dc.customer_key IS NULL"
+    }
+  ],
+  "assumptions": [
+    "All dimension tables are loaded before fact_sales.",
+    "Natural keys in source files are stable for this phase.",
+    "Payment and store dimensions can be derived from transaction distinct values."
+  ],
+  "open_risks": [
+    "Template coverage counts are based on current phase-1 target subset.",
+    "Additional unmapped attributes may appear after store master enrichment."
+  ]
+}

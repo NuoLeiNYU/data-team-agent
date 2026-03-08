@@ -1,0 +1,90 @@
+{
+  "$schema": "connection_schema",
+  "sources": [
+    {
+      "name": "example_sql_database",
+      "type": "sql",
+      "enabled": true,
+      "config": {
+        "driver": "ODBC Driver 17 for SQL Server",
+        "server": "localhost\\SQLEXPRESS",
+        "database": "SalesDB",
+        "authentication": "windows",
+        "tables": "*"
+      },
+      "_comment": "tables can be: '*' (all tables), [] (all tables), ['schema.table1', 'schema.table2'] (specific tables), or omit 'tables' key entirely to discover all"
+    },
+    {
+      "name": "fabric_lakehouse_example",
+      "type": "fabric",
+      "enabled": false,
+      "config": {
+        "workspace_id": "your-workspace-guid",
+        "lakehouse_name": "AnalyticsLakehouse",
+        "authentication": "service_principal",
+        "tables": "*"
+      },
+      "_comment": "tables can be: '*' (all tables), [] (all tables), ['table1', 'table2'] (specific tables), or omit to discover all"
+    },
+    {
+      "name": "sharepoint_files",
+      "type": "sharepoint",
+      "enabled": false,
+      "config": {
+        "site_url": "https://yourcompany.sharepoint.com/sites/DataTeam",
+        "library": "Shared Documents",
+        "files": [
+          "Monthly Sales Report.xlsx",
+          "Customer List.xlsx"
+        ],
+        "authentication": "interactive"
+      }
+    },
+    {
+      "name": "local_csv_files",
+      "type": "file",
+      "enabled": true,
+      "config": {
+        "base_path": "./data/sources",
+        "patterns": ["*.csv", "*.xlsx"],
+        "recursive": false
+      }
+    },
+    {
+      "name": "azure_blob_storage",
+      "type": "cloud",
+      "enabled": false,
+      "config": {
+        "provider": "azure_blob",
+        "account_name": "yourstorageaccount",
+        "container": "raw-data",
+        "authentication": "managed_identity",
+        "file_patterns": ["*.parquet", "*.csv"]
+      }
+    },
+    {
+      "name": "api_data_source",
+      "type": "api",
+      "enabled": false,
+      "config": {
+        "base_url": "https://api.example.com/v1",
+        "endpoints": [
+          {
+            "name": "customers",
+            "path": "/customers",
+            "method": "GET"
+          },
+          {
+            "name": "products",
+            "path": "/products",
+            "method": "GET"
+          }
+        ],
+        "authentication": {
+          "type": "bearer_token",
+          "token_env_var": "API_TOKEN"
+        }
+      }
+    }
+  ]
+}
